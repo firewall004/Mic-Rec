@@ -16,11 +16,13 @@
       </div>
     </div>
 
-    <div class="mt-6 px-6 overflow-y-auto max-h-80">
+    <div v-for="(audio, index) in audioSources" :key="index" class="mt-6 px-28">
       <div
-        v-for="(audio, index) in audioSources"
-        :key="index"
-        class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition duration-300 flex justify-between border border-gray-300 mb-4"
+        :class="{
+          'bg-white': JSON.parse(audio).username === username,
+          'bg-gray-300': JSON.parse(audio).username !== username,
+        }"
+        class="rounded-lg shadow-lg p-4 flex justify-between"
       >
         <div class="font-bold text-xl">{{ JSON.parse(audio).username }}</div>
         <div
@@ -32,7 +34,7 @@
           <audio
             :src="JSON.parse(audio).audioData"
             controls
-            class="w-full focus:outline-none focus:ring focus:ring-indigo-300"
+            class="w-full"
           ></audio>
         </div>
       </div>
