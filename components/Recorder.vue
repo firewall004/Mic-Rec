@@ -32,10 +32,8 @@ export default {
           "dataavailable",
           await this.onDataAvailable
         );
-        console.log("START");
         this.mediaRecorder.start();
       } else {
-        console.log("STOP");
         this.mediaRecorder.stop();
       }
 
@@ -43,18 +41,14 @@ export default {
     },
     async onDataAvailable(event) {
       this.chunks.push(event.data);
-      console.log(event.data);
 
       await this.sendRecording();
     },
     async sendRecording() {
-      console.log("sendRecording");
-
       const blob = new Blob(this.chunks, { type: "audio/webm" });
       const reader = new FileReader();
       reader.onload = () => {
         const audioData = reader.result;
-        // Send audioData via WebSocket
         this.$emit("audioData", audioData);
       };
       reader.readAsDataURL(blob);
