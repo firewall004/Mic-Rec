@@ -26,4 +26,4 @@ $ npm run start
 
 ## Screenshot
 
-![PWA Mic Rec](static/pwa_app.png)
+![PWA Mic Rec](static/ss_pwa_app.png)
