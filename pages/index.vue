@@ -16,17 +16,30 @@
       </div>
     </div>
 
-    <div class="mt-6 px-6 overflow-y-auto max-h-screen-80">
+    <div class="mt-6 px-36 overflow-y-auto max-h-screen-80">
       <div
         v-for="(audio, index) in audioSources"
         :key="index"
         class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition duration-300 flex justify-between border border-gray-300 mb-4"
       >
-        <div class="font-bold text-xl">{{ JSON.parse(audio).username }}</div>
+        <div class="max-w-sm overflow-hidden">
+          <div class="px-6 py-1">
+            <div class="font-bold text-xl mb-2">
+              {{ JSON.parse(audio).metadata.username }}
+            </div>
+            <p class="text-gray-700 text-sm">
+              {{ JSON.parse(audio).metadata.timestamp | formatDate }}
+              <span id="current-time" class="font-semibold"></span>
+            </p>
+          </div>
+        </div>
+
         <div
           :class="{
-            'flex justify-end w-1/2': JSON.parse(audio).username === username,
-            'flex justify-start w-1/2': JSON.parse(audio).username !== username,
+            'flex justify-end w-1/2':
+              JSON.parse(audio).metadata.username === username,
+            'flex justify-start w-1/2':
+              JSON.parse(audio).metadata.username !== username,
           }"
         >
           <audio
@@ -43,7 +56,7 @@
 <script>
 import Recorder from "../components/Recorder.vue";
 
-const ws = new WebSocket("ws://localhost:8099");
+const ws = new WebSocket(process.env.WEBSOCKET_URL);
 
 export default {
   components: {
@@ -72,7 +85,11 @@ export default {
   },
   methods: {
     sendAudioData(audioData) {
-      ws.send(JSON.stringify({ username: this.username, audioData }));
+      let metadata = {
+        username: this.username,
+        timestamp: new Date(),
+      };
+      ws.send(JSON.stringify({ metadata: metadata, audioData }));
     },
     promptForUsername() {
       let username = null;
@@ -80,6 +97,15 @@ export default {
         username = prompt("Please enter your username:");
       }
       this.username = username;
+    },
+  },
+  filters: {
+    formatDate(value) {
+      return new Date(value)
+        .toISOString()
+        .replace(/T/, " ")
+        .replace(/\.\d+Z/, "")
+        .slice(0, 16);
     },
   },
 };
